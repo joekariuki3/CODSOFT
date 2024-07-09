@@ -115,6 +115,38 @@ def mark_as_done(todo_list: TodoList) -> None:
         print('Invalid todo index. Please try again.')
 
 
+def update_todo(todo_list: TodoList) -> None:
+    """
+    Updates a todo item in the todo list provided based on user input for title and description.
+
+    Parameters:
+        todo_list (TodoList): The list of todos to update the item in.
+
+    Returns:
+        None
+    """
+    if len(todo_list.todos) == 0:
+        print('No todos to update. Please add a todo first!')
+        return
+    todo_index = input('Enter the index of the todo to update: ')
+    try:
+        todo_index = int(todo_index)
+        todo = todo_list.todos[todo_index]
+        print(f'Current todo: title{todo.title}  description: {todo.description}')
+        update_title = input('Update title ? (y/n): ')
+        update_description = input('Update description ? (y/n): ')
+
+        if update_title.lower() == 'y':
+            new_title = input(f'Enter new title for "{todo.title}": ')
+            todo.title = new_title
+        if update_description.lower() == 'y':
+            new_description = input(f'Enter new description for "{todo.title} Current description is {todo.description}": ')
+            todo.description = new_description
+
+        print(f'Todo "{todo.title}" updated successfully!')
+    except (IndexError, ValueError):
+        print('Invalid todo index. Please try again.')
+
 def main() -> None:
     """
     The main function of the program. It initializes a TodoList and a dictionary of options.
@@ -141,7 +173,8 @@ def main() -> None:
         4: ('View Completed Todos', lambda: print('Coming soon!')),
         5: ('View Incomplete Todos', lambda: print('Coming soon!')),
         6: ('Mark as Complete', lambda: mark_as_done(todo_list)),
-        7: ('Exit', lambda: exit(0)),
+        7: ('Update Todo', lambda: update_todo(todo_list)),
+        8: ('Exit', lambda: exit(0)),
     }
 
     print('Welcome to the To Do List App!')
