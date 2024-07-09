@@ -95,6 +95,26 @@ def add_new_todo(todo_list: TodoList) -> None:
     todo_list.add_todo(todo)
     print(f'Todo item {todo.id} saved successfully!')
 
+def mark_as_done(todo_list: TodoList) -> None:
+    """
+    A function that marks a todo item as done in the todo list.
+
+    Parameters:
+        todo_list (TodoList): The list of todos in which the todo item will be marked as done.
+
+    Returns:
+        None: This function does not return anything.
+    """
+    todo_index = input('Enter the index of the todo to mark as done: ')
+    try:
+        todo_index = int(todo_index)
+        todo = todo_list.todos[todo_index]
+        todo.completed()
+        print(f'Todo "{todo.title}" marked as done successfully!')
+    except (IndexError, ValueError):
+        print('Invalid todo index. Please try again.')
+
+
 def main() -> None:
     """
     The main function of the program. It initializes a TodoList and a dictionary of options.
@@ -120,7 +140,7 @@ def main() -> None:
         3: ('View All Todos', todo_list.all),
         4: ('View Completed Todos', lambda: print('Coming soon!')),
         5: ('View Incomplete Todos', lambda: print('Coming soon!')),
-        6: ('Mark as Complete', lambda: print('Coming soon!')),
+        6: ('Mark as Complete', lambda: mark_as_done(todo_list)),
         7: ('Exit', lambda: exit(0)),
     }
 
