@@ -173,6 +173,41 @@ def delete_todo(todo_list: TodoList) -> None:
     except (IndexError, ValueError):
         print('Invalid todo index. Please try again.')
 
+def view_todo(todo_list: TodoList) -> None:
+    """
+    View a specific todo item from the todo list based on the index provided by the user.
+
+    Parameters:
+        todo_list (TodoList): The list of todos from which the todo item will be viewed.
+
+    Returns:
+        None: This function does not return anything.
+
+    Raises:
+        IndexError: If the provided todo index is out of range.
+        ValueError: If the provided todo index is not an integer.
+
+    Prints:
+        - If there are no todos in the todo list, prints a message indicating that there are no todos to view.
+        - If the provided todo index is valid, prints the title, description, and status of the todo item.
+        - If the provided todo index is invalid, prints an error message indicating that the todo index is invalid.
+    """
+    if len(todo_list.todos) == 0:
+        print('No todos to view. Please add a todo first!')
+        return
+
+    todo_index = input('Enter the index of the todo to view: ')
+    try:
+        todo_index = int(todo_index)
+        todo = todo_list.todos[todo_index]
+        print(f'Todo Index: {todo_index}')
+        print(f'ID: {todo.id}')
+        print(f'Title: {todo.title}')
+        print(f'Description: {todo.description}')
+        print(f'Status: {"Done" if todo.done else "Not done"}')
+    except (IndexError, ValueError):
+        print('Invalid todo index. Please try again.')
+
 def main() -> None:
     """
     The main function of the program. It initializes a TodoList and a dictionary of options.
@@ -194,7 +229,7 @@ def main() -> None:
     todo_list = TodoList()
     options = {
         1: ('Add New Todo', lambda: add_new_todo(todo_list)),
-        2: ('View Single Todo', lambda: print('Coming soon!')),
+        2: ('View Single Todo', lambda: view_todo(todo_list)),
         3: ('View All Todos', todo_list.all),
         4: ('View Completed Todos', lambda: print('Coming soon!')),
         5: ('View Incomplete Todos', lambda: print('Coming soon!')),
