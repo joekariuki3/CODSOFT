@@ -152,6 +152,15 @@ def update_todo(todo_list: TodoList) -> None:
 
 
 def delete_todo(todo_list: TodoList) -> None:
+    """
+    Deletes a todo item from the todo list based on the index provided by the user.
+
+    Parameters:
+        todo_list (TodoList): The list of todos from which the todo item will be deleted.
+
+    Returns:
+        None: This function does not return anything.
+    """
     if len(todo_list.todos) == 0:
         print('No todos to delete. Please add a todo first!')
         return
