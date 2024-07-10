@@ -73,6 +73,9 @@ class TodoList:
         This method iterates over the `self.todos` list and prints the index and title, description of each todo item.
         If the todo item is marked as done, it also prints the description in parentheses.
         """
+        if len(self.todos) == 0:
+            print('No todos to delete. Please add a todo first!')
+            return
         for index, todo in enumerate(self.todos):
             if todo.done:
                 print(f'{index}: {todo.title} {todo.description} (done)')
@@ -147,6 +150,20 @@ def update_todo(todo_list: TodoList) -> None:
     except (IndexError, ValueError):
         print('Invalid todo index. Please try again.')
 
+
+def delete_todo(todo_list: TodoList) -> None:
+    if len(todo_list.todos) == 0:
+        print('No todos to delete. Please add a todo first!')
+        return
+
+    todo_index = input('Enter the index of the todo to delete: ')
+    try:
+        todo_index = int(todo_index)
+        todo = todo_list.todos.pop(todo_index)
+        print(f'Todo "{todo.title}" deleted successfully!')
+    except (IndexError, ValueError):
+        print('Invalid todo index. Please try again.')
+
 def main() -> None:
     """
     The main function of the program. It initializes a TodoList and a dictionary of options.
@@ -174,7 +191,8 @@ def main() -> None:
         5: ('View Incomplete Todos', lambda: print('Coming soon!')),
         6: ('Mark as Complete', lambda: mark_as_done(todo_list)),
         7: ('Update Todo', lambda: update_todo(todo_list)),
-        8: ('Exit', lambda: exit(0)),
+        8: ('Delete Todo', lambda: delete_todo(todo_list)),
+        9: ('Exit', lambda: exit(0)),
     }
 
     print('Welcome to the To Do List App!')
