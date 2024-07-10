@@ -227,7 +227,28 @@ def view_completed_todos(todo_list: TodoList) -> None:
         print('No completed todos to view.')
         return
     for index, todo in enumerate(completed_todos, start=1):
-         print(f'{index}: {todo.title} {todo.description} {"Done" if todo.done else "Not done"}')
+         print(f'{index}: {todo.title} {todo.description} ({"Done" if todo.done else "Not done"})')
+
+def view_uncompleted_todos(todo_list: TodoList) -> None:
+    """
+    View the uncompleted todos in the given todo list.
+
+    Args:
+        todo_list (TodoList): The todo list to view uncompleted todos from.
+
+    Returns:
+        None: This function does not return anything.
+
+    Prints:
+        - If there are no uncompleted todos, prints a message indicating that there are no uncompleted todos to view.
+        - If there are uncompleted todos, prints the index and title, description, and status of each uncompleted todo item.
+    """
+    uncompleted_todos = [todo for todo in todo_list.todos if not todo.done]
+    if not uncompleted_todos:
+        print('No uncompleted todos to view.')
+        return
+    for index, todo in enumerate(uncompleted_todos, start=1):
+         print(f'{index}: {todo.title} {todo.description} ({"Done" if todo.done else "Not done"})')
 
 def main() -> None:
     """
@@ -253,7 +274,7 @@ def main() -> None:
         2: ('View Single Todo', lambda: view_todo(todo_list)),
         3: ('View All Todos', todo_list.all),
         4: ('View Completed Todos', lambda: view_completed_todos(todo_list)),
-        5: ('View Incomplete Todos', lambda: print('Coming soon!')),
+        5: ('View Uncompleted Todos', lambda: view_uncompleted_todos(todo_list)),
         6: ('Mark as Complete', lambda: mark_as_done(todo_list)),
         7: ('Update Todo', lambda: update_todo(todo_list)),
         8: ('Delete Todo', lambda: delete_todo(todo_list)),
