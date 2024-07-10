@@ -208,6 +208,27 @@ def view_todo(todo_list: TodoList) -> None:
     except (IndexError, ValueError):
         print('Invalid todo index. Please try again.')
 
+def view_completed_todos(todo_list: TodoList) -> None:
+    """
+    View the completed todos in the given todo list.
+
+    Args:
+        todo_list (TodoList): The todo list to view completed todos from.
+
+    Returns:
+        None: This function does not return anything.
+
+    Prints:
+        - If there are no completed todos, prints a message indicating that there are no completed todos to view.
+        - If there are completed todos, prints the index and title, description, and status of each completed todo item.
+    """
+    completed_todos = [todo for todo in todo_list.todos if todo.done]
+    if not completed_todos:
+        print('No completed todos to view.')
+        return
+    for index, todo in enumerate(completed_todos, start=1):
+         print(f'{index}: {todo.title} {todo.description} {"Done" if todo.done else "Not done"}')
+
 def main() -> None:
     """
     The main function of the program. It initializes a TodoList and a dictionary of options.
@@ -231,7 +252,7 @@ def main() -> None:
         1: ('Add New Todo', lambda: add_new_todo(todo_list)),
         2: ('View Single Todo', lambda: view_todo(todo_list)),
         3: ('View All Todos', todo_list.all),
-        4: ('View Completed Todos', lambda: print('Coming soon!')),
+        4: ('View Completed Todos', lambda: view_completed_todos(todo_list)),
         5: ('View Incomplete Todos', lambda: print('Coming soon!')),
         6: ('Mark as Complete', lambda: mark_as_done(todo_list)),
         7: ('Update Todo', lambda: update_todo(todo_list)),
