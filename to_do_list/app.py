@@ -250,23 +250,29 @@ def view_uncompleted_todos(todo_list: TodoList) -> None:
     for index, todo in enumerate(uncompleted_todos, start=1):
          print(f'{index}: {todo.title} {todo.description} ({"Done" if todo.done else "Not done"})')
 
-def main() -> None:
+def terminate() -> None:
     """
-    The main function of the program. It initializes a TodoList and a dictionary of options.
-    The options dictionary maps numbers to a tuple of strings. Each tuple contains
-    the name of the option and a lambda function to execute when the option is chosen.
-
-    The function then prints a welcome message and enters a loop to continuously
-    prompt the user for an option. The user is expected to enter a number corresponding
-    to one of the options in the dictionary. If the user enters a valid number,
-    the corresponding lambda function is executed. If the user enters an invalid
-    number, an error message is printed.
+    Terminates the program.
 
     Parameters:
     None
 
     Returns:
     None
+    """
+    print('Goodbye!')
+    exit()
+
+def main() -> None:
+    """
+    A function that manages the main logic of the To Do List App by providing a menu of options for the user to interact with their to-do list.
+    It initializes a todo_list object, creates a dictionary of options mapped to specific actions, and continuously prompts the user for input until termination.
+
+    Parameters:
+        None
+
+    Returns:
+        None
     """
     todo_list = TodoList()
     options = {
@@ -278,7 +284,7 @@ def main() -> None:
         6: ('Mark as Complete', lambda: mark_as_done(todo_list)),
         7: ('Update Todo', lambda: update_todo(todo_list)),
         8: ('Delete Todo', lambda: delete_todo(todo_list)),
-        9: ('Exit', lambda: exit(0)),
+        9: ('Exit', lambda: terminate()),
     }
 
     print('Welcome to the To Do List App!')
