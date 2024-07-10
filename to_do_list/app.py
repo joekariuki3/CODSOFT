@@ -135,18 +135,28 @@ def update_todo(todo_list: TodoList) -> None:
     try:
         todo_index = int(todo_index)
         todo = todo_list.todos[todo_index]
-        print(f'Current todo: title{todo.title}  description: {todo.description}')
-        update_title = input('Update title ? (y/n): ')
-        update_description = input('Update description ? (y/n): ')
+        print(f'Current todo: title: {todo.title}  description: {todo.description}')
 
+        update_title = input('Update title ? (y/n): ')
         if update_title.lower() == 'y':
             new_title = input(f'Enter new title for "{todo.title}": ')
-            todo.title = new_title
+        else:
+            new_title = todo.title
+        update_description = input('Update description ? (y/n): ')
         if update_description.lower() == 'y':
             new_description = input(f'Enter new description for "{todo.title} Current description is {todo.description}": ')
+        else:
+            new_description = todo.description
+        if update_description.lower() != 'y' and update_title.lower() != 'y':
+            print('Update cancelled.')
+            return
+        # confirm update
+        if confirm(f'Confirm update of "{todo.title}" to title "{new_title}" and description "{new_description}"?'):
+            todo.title = new_title
             todo.description = new_description
-
-        print(f'Todo "{todo.title}" updated successfully!')
+            print(f'Todo "{todo.title}" updated successfully!')
+        else:
+            print('Update cancelled.')
     except (IndexError, ValueError):
         print('Invalid todo index. Please try again.')
 
@@ -168,8 +178,13 @@ def delete_todo(todo_list: TodoList) -> None:
     todo_index = input('Enter the index of the todo to delete: ')
     try:
         todo_index = int(todo_index)
-        todo = todo_list.todos.pop(todo_index)
-        print(f'Todo "{todo.title}" deleted successfully!')
+        todo = todo_list.todos[todo_index]
+        # confirm deletion
+        if confirm(f'Confirm deletion of "{todo.title}"?'):
+            todo_list.todos.pop(todo_index)
+            print(f'Todo "{todo.title}" deleted successfully!')
+        else:
+            print('Deletion cancelled.')
     except (IndexError, ValueError):
         print('Invalid todo index. Please try again.')
 
@@ -249,6 +264,25 @@ def view_uncompleted_todos(todo_list: TodoList) -> None:
         return
     for index, todo in enumerate(uncompleted_todos, start=1):
          print(f'{index}: {todo.title} {todo.description} ({"Done" if todo.done else "Not done"})')
+
+def confirm(prompt: str) -> bool:
+    """
+    Prompts the user to confirm an action.
+
+    Parameters:
+        prompt (str): The prompt to display to the user.
+
+    Returns:
+        bool: True if the user confirms, False otherwise.
+    """
+    while True:
+        response = input(prompt +'(y/n): ')
+        if response.lower() == 'y':
+            return True
+        elif response.lower() == 'n':
+            return False
+        else:
+            print('Invalid response. Please enter y or n.')
 
 def terminate() -> None:
     """
