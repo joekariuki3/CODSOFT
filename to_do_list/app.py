@@ -54,17 +54,37 @@ class TodoList:
         """
         self.todos = []
 
-    def add_todo(self, todo: Todo) -> None:
+    def add_todo(self, title: str, description: str) -> None:
         """
-        Adds a todo item to the list of todos.
+        Adds a new todo item to the list of todos.
 
-        Parameters:
-            todo (Todo): The todo item to be added.
+        Args:
+            title (str): The title of the todo item.
+            description (str): The description of the todo item.
 
         Returns:
-            None: This function does not return anything.
+            None
         """
+        todo = Todo(title, description)
         self.todos.append(todo)
+        print(f'Todo item {todo.id} saved successfully!')
+
+    def mark_as_done(self, todo_index: int) -> None:
+        """
+        A function that marks a todo item as done in the todo list.
+
+        Parameters:
+            todo_index (int): The index of the todo item to mark as done.
+
+        Returns:
+            None
+        """
+        try:
+            todo = self.todos[todo_index]
+            todo.completed()
+            print(f'Todo "{todo.title}" marked as done successfully!')
+        except (IndexError, ValueError):
+            print('Invalid todo index. Please try again.')
 
     def all(self) -> None:
         """
@@ -82,207 +102,163 @@ class TodoList:
             else:
                 print(f'{index}: {todo.title} {todo.description}')
 
-def add_new_todo(todo_list: TodoList) -> None:
-    """
-    Adds a new todo item to the todo list provided.
+    def update_todo(self, todo_index: int) -> None:
+        """
+        A function that updates a todo item in the todo list based on the provided index.
 
-    Parameters:
-        todo_list (TodoList): The list of todos to add the new item.
+        Args:
+            todo_index (int): The index of the todo item to update.
 
-    Returns:
-        None
-    """
-    title = input('Enter a title: ')
-    description = input('Enter a description: ')
-    todo = Todo(title, description)
-    todo_list.add_todo(todo)
-    print(f'Todo item {todo.id} saved successfully!')
-
-def mark_as_done(todo_list: TodoList) -> None:
-    """
-    A function that marks a todo item as done in the todo list.
-
-    Parameters:
-        todo_list (TodoList): The list of todos in which the todo item will be marked as done.
-
-    Returns:
-        None: This function does not return anything.
-    """
-    todo_index = input('Enter the index of the todo to mark as done: ')
-    try:
-        todo_index = int(todo_index)
-        todo = todo_list.todos[todo_index]
-        todo.completed()
-        print(f'Todo "{todo.title}" marked as done successfully!')
-    except (IndexError, ValueError):
-        print('Invalid todo index. Please try again.')
-
-
-def update_todo(todo_list: TodoList) -> None:
-    """
-    Updates a todo item in the todo list provided based on user input for title and description.
-
-    Parameters:
-        todo_list (TodoList): The list of todos to update the item in.
-
-    Returns:
-        None
-    """
-    if len(todo_list.todos) == 0:
-        print('No todos to update. Please add a todo first!')
-        return
-    todo_index = input('Enter the index of the todo to update: ')
-    try:
-        todo_index = int(todo_index)
-        todo = todo_list.todos[todo_index]
-        print(f'Current todo: title: {todo.title}  description: {todo.description}')
-
-        update_title = input('Update title ? (y/n): ')
-        if update_title.lower() == 'y':
-            new_title = input(f'Enter new title for "{todo.title}": ')
-        else:
-            new_title = todo.title
-        update_description = input('Update description ? (y/n): ')
-        if update_description.lower() == 'y':
-            new_description = input(f'Enter new description for "{todo.title} Current description is {todo.description}": ')
-        else:
-            new_description = todo.description
-        if update_description.lower() != 'y' and update_title.lower() != 'y':
-            print('Update cancelled.')
+        Returns:
+            None
+        """
+        if len(self.todos) == 0:
+            print('No todos to update. Please add a todo first!')
             return
-        # confirm update
-        if confirm(f'Confirm update of "{todo.title}" to title "{new_title}" and description "{new_description}"?'):
-            todo.title = new_title
-            todo.description = new_description
-            print(f'Todo "{todo.title}" updated successfully!')
-        else:
-            print('Update cancelled.')
-    except (IndexError, ValueError):
-        print('Invalid todo index. Please try again.')
+        try:
+            todo_index = int(todo_index)
+            todo = self.todos[todo_index]
+            print(f'Current todo: title: {todo.title}  description: {todo.description}')
 
+            update_title = input('Update title ? (y/n): ')
+            if update_title.lower() == 'y':
+                new_title = input(f'Enter new title for "{todo.title}": ')
+            else:
+                new_title = todo.title
+            update_description = input('Update description ? (y/n): ')
+            if update_description.lower() == 'y':
+                new_description = input(f'Enter new description for "{todo.title} Current description is {todo.description}": ')
+            else:
+                new_description = todo.description
+            if update_description.lower() != 'y' and update_title.lower() != 'y':
+                print('Update cancelled.')
+                return
+            # confirm update
+            if self.confirm(f'Confirm update of "{todo.title}" to title "{new_title}" and description "{new_description}"?'):
+                todo.title = new_title
+                todo.description = new_description
+                print(f'Todo "{todo.title}" updated successfully!')
+            else:
+                print('Update cancelled.')
+        except (IndexError, ValueError):
+            print('Invalid todo index. Please try again.')
 
-def delete_todo(todo_list: TodoList) -> None:
-    """
-    Deletes a todo item from the todo list based on the index provided by the user.
+    def delete_todo(self, todo_index: int) -> None:
+        """
+        Deletes a todo item from the list of todos based on the provided index.
 
-    Parameters:
-        todo_list (TodoList): The list of todos from which the todo item will be deleted.
+        Args:
+            todo_index (int): The index of the todo item to delete.
 
-    Returns:
-        None: This function does not return anything.
-    """
-    if len(todo_list.todos) == 0:
-        print('No todos to delete. Please add a todo first!')
-        return
+        Returns:
+            None
 
-    todo_index = input('Enter the index of the todo to delete: ')
-    try:
-        todo_index = int(todo_index)
-        todo = todo_list.todos[todo_index]
-        # confirm deletion
-        if confirm(f'Confirm deletion of "{todo.title}"?'):
-            todo_list.todos.pop(todo_index)
-            print(f'Todo "{todo.title}" deleted successfully!')
-        else:
-            print('Deletion cancelled.')
-    except (IndexError, ValueError):
-        print('Invalid todo index. Please try again.')
+        Raises:
+            IndexError: If the provided todo index is out of range.
+            ValueError: If the provided todo index is not an integer.
 
-def view_todo(todo_list: TodoList) -> None:
-    """
-    View a specific todo item from the todo list based on the index provided by the user.
+        Prints:
+            - If there are no todos in the todo list, prints a message indicating that there are no todos to delete.
+            - If the provided todo index is valid, prints a message indicating that the todo item has been deleted successfully.
+            - If the provided todo index is invalid, prints an error message indicating that the todo index is invalid.
+            - If the deletion is cancelled by the user, prints a message indicating that the deletion has been cancelled.
+        """
+        if len(self.todos) == 0:
+            print('No todos to delete. Please add a todo first!')
+            return
+        try:
+            todo = self.todos[todo_index]
+            # confirm deletion
+            if self.confirm(f'Confirm deletion of "{todo.title}"?'):
+                self.todos.pop(todo_index)
+                print(f'Todo "{todo.title}" deleted successfully!')
+            else:
+                print('Deletion cancelled.')
+        except (IndexError, ValueError):
+            print('Invalid todo index. Please try again.')
 
-    Parameters:
-        todo_list (TodoList): The list of todos from which the todo item will be viewed.
+    def view_todo(self, todo_index: int) -> None:
+        """
+        A function that views the details of a todo item based on the provided index.
 
-    Returns:
-        None: This function does not return anything.
+        Parameters:
+            - todo_index (int): The index of the todo item to view.
 
-    Raises:
-        IndexError: If the provided todo index is out of range.
-        ValueError: If the provided todo index is not an integer.
+        Returns:
+            None
+        """
+        if len(self.todos) == 0:
+            print('No todos to view. Please add a todo first!')
+            return
+        try:
+            todo = self.todos[todo_index]
+            print(f'Todo Index: {todo_index}')
+            print(f'ID: {todo.id}')
+            print(f'Title: {todo.title}')
+            print(f'Description: {todo.description}')
+            print(f'Status: {"Done" if todo.done else "Not done"}')
+        except (IndexError, ValueError):
+            print('Invalid todo index. Please try again.')
 
-    Prints:
-        - If there are no todos in the todo list, prints a message indicating that there are no todos to view.
-        - If the provided todo index is valid, prints the title, description, and status of the todo item.
-        - If the provided todo index is invalid, prints an error message indicating that the todo index is invalid.
-    """
-    if len(todo_list.todos) == 0:
-        print('No todos to view. Please add a todo first!')
-        return
+    def view_completed_todos(self) -> None:
+        """
+        View the completed todos in the todo list.
 
-    todo_index = input('Enter the index of the todo to view: ')
-    try:
-        todo_index = int(todo_index)
-        todo = todo_list.todos[todo_index]
-        print(f'Todo Index: {todo_index}')
-        print(f'ID: {todo.id}')
-        print(f'Title: {todo.title}')
-        print(f'Description: {todo.description}')
-        print(f'Status: {"Done" if todo.done else "Not done"}')
-    except (IndexError, ValueError):
-        print('Invalid todo index. Please try again.')
+        This function retrieves the completed todos from the `todos` list and prints their index, title, and description.
+        If there are no completed todos, a message indicating that there are no completed todos to view is printed.
 
-def view_completed_todos(todo_list: TodoList) -> None:
-    """
-    View the completed todos in the given todo list.
+        Parameters:
+            self (TodoList): The instance of the `TodoList` class.
 
-    Args:
-        todo_list (TodoList): The todo list to view completed todos from.
+        Returns:
+            None
+        """
+        completed_todos = [todo for todo in self.todos if todo.done]
+        if not completed_todos:
+            print('No completed todos to view.')
+            return
+        for index, todo in enumerate(completed_todos, start=1):
+            print(f'{index}: {todo.title} {todo.description} ({"Done" if todo.done else "Not done"})')
 
-    Returns:
-        None: This function does not return anything.
+    def view_uncompleted_todos(self) -> None:
+        """
+        View the uncompleted todos in the todo list.
 
-    Prints:
-        - If there are no completed todos, prints a message indicating that there are no completed todos to view.
-        - If there are completed todos, prints the index and title, description, and status of each completed todo item.
-    """
-    completed_todos = [todo for todo in todo_list.todos if todo.done]
-    if not completed_todos:
-        print('No completed todos to view.')
-        return
-    for index, todo in enumerate(completed_todos, start=1):
-         print(f'{index}: {todo.title} {todo.description} ({"Done" if todo.done else "Not done"})')
+        This function retrieves the uncompleted todos from the `todos` list and prints their index, title, and description.
+        If there are no uncompleted todos, a message indicating that there are no uncompleted todos to view is printed.
 
-def view_uncompleted_todos(todo_list: TodoList) -> None:
-    """
-    View the uncompleted todos in the given todo list.
+        Parameters:
+            self (TodoList): The instance of the `TodoList` class.
 
-    Args:
-        todo_list (TodoList): The todo list to view uncompleted todos from.
+        Returns:
+            None
+        """
+        uncompleted_todos = [todo for todo in self.todos if not todo.done]
+        if not uncompleted_todos:
+            print('No uncompleted todos to view.')
+            return
+        for index, todo in enumerate(uncompleted_todos, start=1):
+            print(f'{index}: {todo.title} {todo.description} ({"Done" if todo.done else "Not done"})')
 
-    Returns:
-        None: This function does not return anything.
+    @staticmethod
+    def confirm(prompt: str) -> bool:
+        """
+        Prompts the user to confirm an action.
 
-    Prints:
-        - If there are no uncompleted todos, prints a message indicating that there are no uncompleted todos to view.
-        - If there are uncompleted todos, prints the index and title, description, and status of each uncompleted todo item.
-    """
-    uncompleted_todos = [todo for todo in todo_list.todos if not todo.done]
-    if not uncompleted_todos:
-        print('No uncompleted todos to view.')
-        return
-    for index, todo in enumerate(uncompleted_todos, start=1):
-         print(f'{index}: {todo.title} {todo.description} ({"Done" if todo.done else "Not done"})')
+        Parameters:
+            prompt (str): The prompt to display to the user.
 
-def confirm(prompt: str) -> bool:
-    """
-    Prompts the user to confirm an action.
-
-    Parameters:
-        prompt (str): The prompt to display to the user.
-
-    Returns:
-        bool: True if the user confirms, False otherwise.
-    """
-    while True:
-        response = input(prompt +'(y/n): ')
-        if response.lower() == 'y':
-            return True
-        elif response.lower() == 'n':
-            return False
-        else:
-            print('Invalid response. Please enter y or n.')
+        Returns:
+            bool: True if the user confirms, False otherwise.
+        """
+        while True:
+            response = input(prompt +'(y/n): ')
+            if response.lower() == 'y':
+                return True
+            elif response.lower() == 'n':
+                return False
+            else:
+                print('Invalid response. Please enter y or n.')
 
 def terminate() -> None:
     """
@@ -298,26 +274,16 @@ def terminate() -> None:
     exit()
 
 def main() -> None:
-    """
-    A function that manages the main logic of the To Do List App by providing a menu of options for the user to interact with their to-do list.
-    It initializes a todo_list object, creates a dictionary of options mapped to specific actions, and continuously prompts the user for input until termination.
-
-    Parameters:
-        None
-
-    Returns:
-        None
-    """
     todo_list = TodoList()
     options = {
-        1: ('Add New Todo', lambda: add_new_todo(todo_list)),
-        2: ('View Single Todo', lambda: view_todo(todo_list)),
+        1: ('Add New Todo', lambda: todo_list.add_todo(input('Enter a title: '), input('Enter a description: '))),
+        2: ('View Single Todo', lambda: todo_list.view_todo(int(input('Enter the index of the todo to view: ')))),
         3: ('View All Todos', todo_list.all),
-        4: ('View Completed Todos', lambda: view_completed_todos(todo_list)),
-        5: ('View Uncompleted Todos', lambda: view_uncompleted_todos(todo_list)),
-        6: ('Mark as Complete', lambda: mark_as_done(todo_list)),
-        7: ('Update Todo', lambda: update_todo(todo_list)),
-        8: ('Delete Todo', lambda: delete_todo(todo_list)),
+        4: ('View Completed Todos', todo_list.view_completed_todos),
+        5: ('View Uncompleted Todos', todo_list.view_uncompleted_todos),
+        6: ('Mark as Complete', lambda: todo_list.mark_as_done(int(input('Enter the index of the todo to mark as done: ')))),
+        7: ('Update Todo', lambda: todo_list.update_todo(int(input('Enter the index of the todo to update: ')))),
+        8: ('Delete Todo', lambda: todo_list.delete_todo(int(input('Enter the index of the todo to delete: ')))),
         9: ('Exit', lambda: terminate()),
     }
 
