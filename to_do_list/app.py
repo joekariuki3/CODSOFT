@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from todolist import TodoList
 from filetodolist import FileTodoList
-from dbtodolist import dbTodoList
+from dbtodolist import DbTodoList
 from dotenv import load_dotenv
 import os
 
@@ -31,7 +31,7 @@ def main() -> None:
             filename = input('Enter a filename: ')
         todo_list = FileTodoList(filename)
     elif todo_list_option == 'database':
-        todo_list = dbTodoList()
+        todo_list = DbTodoList()
     else:
         print('Choose a todo list option:')
         print('  1. In-memory list')
@@ -45,7 +45,7 @@ def main() -> None:
             filename = input('Enter a filename: ')
             todo_list = FileTodoList(filename)
         elif option == '3':
-            todo_list = dbTodoList()
+            todo_list = DbTodoList()
         else:
             print('Invalid option. Exiting.')
             return
