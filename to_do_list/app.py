@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from todolist import TodoList
 from filetodolist import FileTodoList
+from dbtodolist import dbTodoList
 from dotenv import load_dotenv
 import os
 
@@ -29,10 +30,13 @@ def main() -> None:
         if filename is None:
             filename = input('Enter a filename: ')
         todo_list = FileTodoList(filename)
+    elif todo_list_option == 'database':
+        todo_list = dbTodoList()
     else:
         print('Choose a todo list option:')
         print('  1. In-memory list')
         print('  2. File list')
+        print('  3. Database list')
         option = input('Enter an option: ')
 
         if option == '1':
@@ -40,6 +44,8 @@ def main() -> None:
         elif option == '2':
             filename = input('Enter a filename: ')
             todo_list = FileTodoList(filename)
+        elif option == '3':
+            todo_list = dbTodoList()
         else:
             print('Invalid option. Exiting.')
             return
