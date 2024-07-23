@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 import os
-from typing import Union
+from typing import Union, List
 
 load_dotenv()
 
@@ -25,6 +25,16 @@ class contactModel(Base):
         :return: A string representation of the Contact object.
         """
         return f'Contact(id={self.id}, name={self.name}, email={self.email}, phone={self.phone}, address={self.address})'
+
+    def to_dict(self) -> dict:
+        # convert a contact to dictionary
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone,
+            'address': self.address
+        }
 
 class ContactBook:
     def __init__(self)->None:
@@ -59,3 +69,52 @@ class ContactBook:
         self.session.add(contact)
         self.session.commit()
         return contact
+
+    def get_contact(self, contact_id: int) -> contactModel:
+        """
+        Returns a contact from the database.
+
+        Args:
+            contact_id (int): The ID of the contact to retrieve.
+
+        Returns:
+            contactModel: contact object.
+
+        This function returns a `contactModel` object in the session with the given `contact_id`.
+        """
+        return self.session.query(contactModel).filter_by(id=contact_id).first()
+
+    def get_all_contacts(self) -> List[contactModel]:
+        """
+        Returns a list of all contacts in the database.
+
+        Returns:
+            list[contactModel]: A list of all contacts in the database.
+
+        This function returns a list of all `contactModel` objects in the session.
+        """
+        return self.session.query(contactModel).all()
+
+    def update_contact(self, contact_id: int, name: str, email: Union[str, None] = None, phone: Union[str, None] = None, address: Union[str, None] = None) -> None:
+        contact = self.session.query(contactModel).filter_by(id=contact_id).first()
+        contact.name = name
+        contact.email = email
+        contact.phone = phone
+        contact.address = address
+        self.session.commit()
+
+    def delete_contact(self, contact_id: int) -> None:
+        """
+        Deletes a contact from the database.
+
+        Args:
+            contact_id (int): The ID of the contact to delete.
+
+        Returns:
+            None
+
+        This function deletes a `contactModel` object in the session with the given `contact_id`. It then commits
+        the changes to the database.
+        """
+        self.session.query(contactModel).filter_by(id=contact_id).delete()
+        self.session.commit()
