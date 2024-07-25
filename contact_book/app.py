@@ -8,9 +8,7 @@ def add_new_contact():
     """
     Adds a new contact to the contact book.
 
-    This function prompts the user to enter the contact's name, phone number, email, and address.
-    It then creates a new `ContactBook` instance and adds the contact to it.
-    Finally, it prints a message indicating that the contact has been added, along with the contact's name and phone number.
+    This function prompts the user to enter the contact name, phone number, email, and address. It then creates a new `ContactBook` instance and adds the contact to the contact book using the `add_contact` method. If the contact is successfully added, it prints a message indicating the contact name and phone number. If there is an error, it prints the error message.
 
     Parameters:
         None
@@ -23,8 +21,11 @@ def add_new_contact():
     email = input('Enter the contact email: ')
     address = input('Enter the contact address: ')
     contact = ContactBook()
-    new_contact = contact.add_contact(name=name, phone=phone, email=email, address=address)
-    print(f'New contact added: ({new_contact.name}: {new_contact.phone})')
+    try:
+        new_contact = contact.add_contact(name=name, phone=phone, email=email, address=address)
+        print(f'New contact added: ({new_contact.name}: {new_contact.phone})')
+    except ValueError as e:
+        print(e)
 
 def view_contact():
     """
@@ -64,7 +65,17 @@ def view_all_contacts():
         print(contact)
 
 def edit_contact():
-    # enter contact id pass it to update_contact
+    """
+    Edits a contact in the contact book.
+
+    This function prompts the user to enter the contact id and allows them to edit the contact's name, phone number, email, and address. It creates a new `ContactBook` instance and retrieves the contact with the given id. If the contact exists, it prints the current contact details and prompts the user to enter the new values. The function then updates the contact with the new values and prints a success message along with the updated contact details. If the contact does not exist, it prints a message indicating that the contact was not found.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     contact_id = int(input('Enter contact id: '))
     contact = ContactBook()
     current_contact = contact.get_contact(contact_id)

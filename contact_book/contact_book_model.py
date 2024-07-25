@@ -10,7 +10,7 @@ load_dotenv()
 
 Base = declarative_base()
 
-class contactModel(Base):
+class ContactModel(Base):
     __tablename__ = 'contacts'
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -27,7 +27,13 @@ class contactModel(Base):
         return f'Contact(id={self.id}, name={self.name}, email={self.email}, phone={self.phone}, address={self.address})'
 
     def to_dict(self) -> dict:
-        # convert a contact to dictionary
+        """
+        Returns a dictionary representation of the Contact object.
+
+        Returns:
+            dict: A dictionary representation of the Contact object with its id, name, email, phone, and address.
+
+        """
         return {
             'id': self.id,
             'name': self.name,
@@ -46,9 +52,10 @@ class ContactBook:
         """
         self.engine = sqlalchemy.create_engine(os.getenv('DATABASE_URL'))
         Base.metadata.create_all(self.engine)
-        self.session = sessionmaker(bind=self.engine)()
+        self.session = sessionmaker(bind=self.engine)
+        self.session = self.session()
 
-    def add_contact(self, name:str, phone:str, email:Union[str,None] = None, address: Union[str, None] = None) -> int:
+    def add_contact(self, name: str, phone: str, email: Union[str, None] = None, address: Union[str, None] = None) -> ContactModel:
         """
         Adds a new contact to the database.
 
@@ -59,18 +66,23 @@ class ContactBook:
             address (Union[str, None], optional): The address of the contact. Defaults to None.
 
         Returns:
-            contactModel: contact object.
+            ContactModel: The newly created contact object.
 
-        This function creates a new `contactModel` instance with the given `name`, `email`, `phone`, and `address`,
-        and then adds it to the session and commits the changes to the database. Finally, it returns the ID of the
-        newly added contact.
+        Raises:
+            ValueError: If a contact with the same phone number already exists in the database.
+
+        This function creates a new `ContactModel` object with the given name, email, phone, and address. It then adds the contact to the session and attempts to commit the changes to the database. If a `sqlalchemy.exc.IntegrityError` is raised, indicating a duplicate phone number, the session is rolled back and a `ValueError` is raised. Otherwise, the newly created contact object is returned.
         """
-        contact = contactModel(name=name, email=email, phone=phone, address=address)
+        contact = ContactModel(name=name, email=email, phone=phone, address=address)
         self.session.add(contact)
-        self.session.commit()
+        try:
+            self.session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            self.session.rollback()
+            raise ValueError("A contact with this phone number already exists.")
         return contact
 
-    def get_contact(self, contact_id: int) -> contactModel:
+    def get_contact(self, contact_id: int) -> ContactModel:
         """
         Returns a contact from the database.
 
@@ -78,30 +90,49 @@ class ContactBook:
             contact_id (int): The ID of the contact to retrieve.
 
         Returns:
-            contactModel: contact object.
+            ContactModel: contact object.
 
-        This function returns a `contactModel` object in the session with the given `contact_id`.
+        This function returns a `ContactModel` object in the session with the given `contact_id`.
         """
-        return self.session.query(contactModel).filter_by(id=contact_id).first()
+        return self.session.query(ContactModel).filter_by(id=contact_id).first()
 
-    def get_all_contacts(self) -> List[contactModel]:
+    def get_all_contacts(self) -> List[ContactModel]:
         """
         Returns a list of all contacts in the database.
 
         Returns:
-            list[contactModel]: A list of all contacts in the database.
+            list[ContactModel]: A list of all contacts in the database.
 
-        This function returns a list of all `contactModel` objects in the session.
+        This function returns a list of all `ContactModel` objects in the session.
         """
-        return self.session.query(contactModel).all()
+        return self.session.query(ContactModel).all()
 
     def update_contact(self, contact_id: int, name: str, email: Union[str, None] = None, phone: Union[str, None] = None, address: Union[str, None] = None) -> None:
-        contact = self.session.query(contactModel).filter_by(id=contact_id).first()
-        contact.name = name
-        contact.email = email
-        contact.phone = phone
-        contact.address = address
-        self.session.commit()
+        """
+        Updates a contact in the database with the given contact ID.
+
+        Args:
+            contact_id (int): The ID of the contact to update.
+            name (str): The new name of the contact.
+            email (Union[str, None], optional): The new email address of the contact. Defaults to None.
+            phone (Union[str, None], optional): The new phone number of the contact. Defaults to None.
+            address (Union[str, None], optional): The new address of the contact. Defaults to None.
+
+        Returns:
+            None: This function does not return anything.
+
+        Raises:
+            None
+
+        This function retrieves a contact from the database with the given contact ID. If the contact exists, it updates the contact's name, email, phone, and address with the provided values. It then commits the changes to the database.
+        """
+        contact = self.get_contact(contact_id)
+        if contact:
+            contact.name = name
+            contact.email = email
+            contact.phone = phone
+            contact.address = address
+            self.session.commit()
 
     def delete_contact(self, contact_id: int) -> None:
         """
@@ -113,8 +144,8 @@ class ContactBook:
         Returns:
             None
 
-        This function deletes a `contactModel` object in the session with the given `contact_id`. It then commits
+        This function deletes a `ContactModel` object in the session with the given `contact_id`. It then commits
         the changes to the database.
         """
-        self.session.query(contactModel).filter_by(id=contact_id).delete()
+        self.session.query(ContactModel).filter_by(id=contact_id).delete()
         self.session.commit()
