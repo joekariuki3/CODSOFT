@@ -1,4 +1,7 @@
+customtkinter==5.2.2
+darkdetect==0.8.0
 greenlet==3.0.3
+packaging==24.1
 python-dotenv==1.0.1
 SQLAlchemy==2.0.31
 typing-extensions==4.12.2
